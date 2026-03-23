@@ -7,6 +7,7 @@ import ReactFlow, {
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
+  useReactFlow,
 } from "reactflow";
 import type { Connection, EdgeChange, NodeChange } from "reactflow";
 import "reactflow/dist/style.css";
@@ -28,8 +29,13 @@ export default function WorkflowCanvas() {
   const nodes = useWorkflowStore((state) => state.nodes);
   const edges = useWorkflowStore((state) => state.edges);
 
-  const [isRunning, setIsRunning] = useState(false);
   const addRun = useWorkflowStore((state) => state.addRun);
+
+  const [isRunning, setIsRunning] = useState(false);
+
+  const { project } = useReactFlow(); 
+
+
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     useWorkflowStore.setState((state) => ({
@@ -52,6 +58,34 @@ export default function WorkflowCanvas() {
     }));
   }, []);
 
+
+
+  const onDragOver = (event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  };
+
+  const onDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+
+    const type = event.dataTransfer.getData("application/reactflow");
+    if (!type) return;
+
+    const position = project({
+      x: event.clientX,
+      y: event.clientY,
+    });
+
+    useWorkflowStore.getState().addNode({
+      id: Date.now().toString(),
+      type,
+      position,
+      data: {},
+    });
+  };
+
+
+
   const getInputData = (nodeId: string) => {
     const { nodes, edges } = useWorkflowStore.getState();
 
@@ -66,6 +100,8 @@ export default function WorkflowCanvas() {
       return sourceNode?.data;
     });
   };
+
+
 
   const getExecutionLevels = () => {
     const inDegree: Record<string, number> = {};
@@ -139,6 +175,8 @@ export default function WorkflowCanvas() {
     return count !== nodes.length;
   };
 
+
+
   const runWorkflow = async () => {
     if (hasCycle()) {
       alert("Cycle detected! Workflow must be a DAG.");
@@ -157,7 +195,7 @@ export default function WorkflowCanvas() {
 
         const inputs = getInputData(nodeId);
 
-
+        // running state
         useWorkflowStore.setState((state) => ({
           nodes: state.nodes.map((n) =>
             n.id === nodeId
@@ -173,11 +211,12 @@ export default function WorkflowCanvas() {
         }));
 
         try {
+
           if (node.type === "cropNode") {
             const imageInput = inputs.find((inp) => inp?.image);
-          
+
             await new Promise((res) => setTimeout(res, 400));
-          
+
             useWorkflowStore.setState((state) => ({
               nodes: state.nodes.map((n) =>
                 n.id === nodeId
@@ -193,15 +232,17 @@ export default function WorkflowCanvas() {
               ),
             }));
           }
+
+
           if (node.type === "llmNode") {
             const textInputs = inputs
               .map((inp) => inp?.text || inp?.output)
               .filter(Boolean);
-          
+
             const combinedText = textInputs.join(" ");
-          
+
             let output = "";
-          
+
             try {
               const res = await fetch("/api/gemini", {
                 method: "POST",
@@ -210,13 +251,13 @@ export default function WorkflowCanvas() {
                 },
                 body: JSON.stringify({ prompt: combinedText }),
               });
-          
+
               const data = await res.json();
               output = data.output;
             } catch {
               output = "AI says: " + combinedText;
             }
-          
+
             useWorkflowStore.setState((state) => ({
               nodes: state.nodes.map((n) =>
                 n.id === nodeId
@@ -248,6 +289,7 @@ export default function WorkflowCanvas() {
             ),
           }));
         }
+
         const { nodes: finalNodes } = useWorkflowStore.getState();
 
         addRun({
@@ -265,9 +307,11 @@ export default function WorkflowCanvas() {
     }
   };
 
+
+
   return (
     <div className="h-screen w-full relative">
-      
+
       <button
         disabled={isRunning}
         className={`absolute top-4 left-72 z-10 px-3 py-1 rounded ${
@@ -282,6 +326,7 @@ export default function WorkflowCanvas() {
         {isRunning ? "Running..." : "Run"}
       </button>
 
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -289,6 +334,8 @@ export default function WorkflowCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onDrop={onDrop}          
+        onDragOver={onDragOver} 
         defaultEdgeOptions={{
           animated: true,
           style: { stroke: "#a855f7", strokeWidth: 2 },
