@@ -9,14 +9,14 @@ export default function TextNode({ id, data }: { id: string, data: { text: strin
   );
 
   return (
-    <div className="p-3 bg-white rounded shadow w-48 border">
+    <div className="p-3 rounded-xl shadow-md w-60 border border-gray-300 bg-white">
       
       <Handle type="target" position={Position.Top} />
 
-      <p className="text-sm font-semibold mb-2">Text Node</p>
+      <p className="font-semibold text-sm mb-2 text-gray-700">Text Node</p>
 
       <textarea
-        className="border w-full p-2 text-xs"
+        className="border w-full p-2 text-xs text-gray-700"
         value={data.text || ""}
         onChange={(e) =>
           updateNodeData(id, { text: e.target.value })

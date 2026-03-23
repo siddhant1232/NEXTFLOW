@@ -1,81 +1,48 @@
-# NextFlow – LLM Workflow Builder
+# NextFlow — AI Workflow Builder
 
-NextFlow is a pixel-perfect workflow builder inspired by Krea.ai, focused on building and executing LLM-based workflows.
+NextFlow is a visual workflow builder inspired by tools like Krea.ai. It allows users to create and execute AI workflows using a node-based interface.
 
----
+## Features
 
-## 🚀 Features
+* Node-based workflow editor using React Flow
+* DAG-based execution (cycle detection included)
+* Multimodal LLM node (text + image input)
+* Image upload and preview
+* Crop node for transformation
+* Execution history panel with node-level details
+* Real-time node status (running, success, error)
 
-### 🧠 Core Workflow Engine
-- Drag & drop node-based workflow system
-- Directed Acyclic Graph (DAG) execution
-- Topological sorting for correct execution order
-- Parallel execution of independent nodes
+## How It Works
 
-### 🔗 Node System
-- Text Node (input)
-- LLM Node (processing)
-- Node-to-node data flow via edges
+1. Add nodes from the sidebar
+2. Connect nodes to define flow
+3. Run the workflow
+4. Execution follows topological order
+5. Outputs appear inside nodes
+6. History panel logs each run
 
-### ⚡ Execution Engine
-- Level-based execution (parallel branches)
-- Real-time state updates using Zustand
-- Dynamic input aggregation from connected nodes
+## Tech Stack
 
-### 🛡️ Validation
-- Cycle detection (prevents invalid workflows)
-- Type-safe connections (extensible)
+* Next.js
+* TypeScript
+* React Flow
+* Zustand
+* Tailwind CSS
 
-### 📊 Node Status System
-- 🟡 Running
-- 🟢 Success
-- 🔴 Error
-- Inline result display on nodes
+## Highlights
 
-### 🎨 UI/UX
-- Built with React Flow
-- Smooth canvas interactions (zoom, pan, minimap)
-- Clean node-based interface
+* Multimodal data handling
+* Level-based execution
+* Node-level observability
+* Clean and modular architecture
 
----
+## Future Improvements
 
-## 🏗️ Tech Stack
+* Real LLM integration (Gemini/OpenAI)
+* Video processing nodes
+* Workflow persistence
+* Drag-and-drop sidebar
 
-- Next.js (App Router)
-- TypeScript
-- React Flow
-- Zustand (state management)
-- Tailwind CSS
-
----
-
-## ⚙️ Execution Model
-
-Workflows are executed as a DAG:
-
-1. Nodes are grouped into execution levels
-2. Independent nodes run in parallel
-3. Dependent nodes wait for upstream completion
-4. Data flows through edges dynamically
-
----
-
-## 🔮 Future Improvements
-
-- Trigger.dev integration for real async execution
-- Workflow persistence (PostgreSQL + Prisma)
-- Authentication (Clerk)
-- Execution history panel
-- Export/import workflows
-
----
-
-## 🎯 Demo
-
-will attach soon
-
----
-
-## 🧑‍💻 Author
+## Author
 
 Siddhant Gupta

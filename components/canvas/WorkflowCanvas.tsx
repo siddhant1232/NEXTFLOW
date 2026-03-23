@@ -197,20 +197,26 @@ export default function WorkflowCanvas() {
             const textInputs = inputs
               .map((inp) => inp?.text || inp?.output)
               .filter(Boolean);
-
-            const imageInputs = inputs
-              .map((inp) => inp?.image)
-              .filter(Boolean);
-
+          
             const combinedText = textInputs.join(" ");
-
-            const output =
-              "AI says: " +
-              combinedText +
-              (imageInputs.length ? " [with image]" : "");
-
-            await new Promise((res) => setTimeout(res, 500));
-
+          
+            let output = "";
+          
+            try {
+              const res = await fetch("/api/gemini", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ prompt: combinedText }),
+              });
+          
+              const data = await res.json();
+              output = data.output;
+            } catch {
+              output = "AI says: " + combinedText;
+            }
+          
             useWorkflowStore.setState((state) => ({
               nodes: state.nodes.map((n) =>
                 n.id === nodeId
@@ -235,6 +241,7 @@ export default function WorkflowCanvas() {
                     data: {
                       ...n.data,
                       status: "error",
+                      output: "Something went wrong",
                     },
                   }
                 : n
@@ -282,6 +289,10 @@ export default function WorkflowCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        defaultEdgeOptions={{
+          animated: true,
+          style: { stroke: "#a855f7", strokeWidth: 2 },
+        }}
       >
         <Background />
         <Controls />

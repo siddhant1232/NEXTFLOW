@@ -32,7 +32,11 @@ export default function RightSidebar() {
           </div>
         ))}
       </div>
-
+      {runs.length === 0 && (
+        <p className="text-gray-500 text-sm">
+          No workflow runs yet. Click &quot;Run Workflow&quot;.
+        </p>
+      )}
       {selectedRun && (
         <div className="mt-6">
           <h3 className="text-md font-semibold mb-2">

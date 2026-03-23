@@ -13,7 +13,7 @@ export default function LLMNode({
   };
 }) {
   return (
-    <div className="p-3 bg-yellow-100 rounded shadow w-60 border">
+    <div className="p-4 rounded-xl shadow-md w-64 border bg-yellow-50">
       
       <Handle
         type="target"
@@ -21,7 +21,7 @@ export default function LLMNode({
         style={{ background: "#555" }}
       />
 
-      <p className="font-semibold mb-2">LLM Node</p>
+      <p className="font-semibold mb-2 text-gray-700">LLM Node</p>
       {data?.status === "running" && (
         <p className="text-yellow-600">🟡 Running...</p>
       )}
