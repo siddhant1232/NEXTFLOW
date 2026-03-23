@@ -2,12 +2,16 @@
 
 import { useWorkflowStore } from "@/store/useWorkflowStore";
 import { useUser, UserButton } from "@clerk/nextjs";
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 
-export default function LeftSidebar() {
+type LeftSidebarProps = {
+  mobileOpen: boolean;
+  setMobileOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function LeftSidebar({ mobileOpen, setMobileOpen }: LeftSidebarProps) {
   const addNode = useWorkflowStore((state) => state.addNode);
   const { user } = useUser();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -21,6 +25,9 @@ export default function LeftSidebar() {
       },
       data: {},
     });
+
+    // Close the mobile drawer after selecting a node type.
+    setMobileOpen(false);
   };
 
   return (

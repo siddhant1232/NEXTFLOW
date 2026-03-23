@@ -1,17 +1,11 @@
-import WorkflowCanvas from "@/components/canvas/WorkflowCanvas";
-import LeftSidebar from "@/components/sidebar/LeftSidebar";
-import RightSidebar from "@/components/sidebar/RightSidebar";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import ClientWrapper from "@/components/ClientWrapper";
 
-export default function Home() {
-  return (
-    <div className="flex">
-      <LeftSidebar />
+export default async function Page() {
+  const { userId } = await auth();
 
-      <div className="flex-1">
-        <WorkflowCanvas />
-      </div>
+  if (!userId) redirect("/sign-in");
 
-      <RightSidebar />
-    </div>
-  );
+  return <ClientWrapper />;
 }
