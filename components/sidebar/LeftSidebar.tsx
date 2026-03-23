@@ -9,17 +9,22 @@ type LeftSidebarProps = {
   setMobileOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function LeftSidebar({ mobileOpen, setMobileOpen }: LeftSidebarProps) {
+export default function LeftSidebar({
+  mobileOpen,
+  setMobileOpen,
+}: LeftSidebarProps) {
   const addNode = useWorkflowStore((state) => state.addNode);
   const { user } = useUser();
 
   const [collapsed, setCollapsed] = useState(false);
 
+  // ---------------- DRAG ----------------
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
 
+  // ---------------- CLICK ----------------
   const createNode = (type: string) => {
     addNode({
       id: Date.now().toString(),
@@ -34,8 +39,11 @@ export default function LeftSidebar({ mobileOpen, setMobileOpen }: LeftSidebarPr
     setMobileOpen(false);
   };
 
+  // ---------------- STYLES ----------------
   const buttonBase =
-    "flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium";
+    "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium bg-[#1a1a1a] hover:bg-[#222] border border-gray-700 hover:scale-[1.02] active:scale-[0.98]";
+
+  const iconStyle = "w-2 h-2 rounded-full";
 
   return (
     <div
@@ -46,13 +54,14 @@ export default function LeftSidebar({ mobileOpen, setMobileOpen }: LeftSidebarPr
         ${mobileOpen ? "left-0" : "-left-full"} md:left-0
       `}
     >
-      {/* TOP */}
       <div className="p-4 flex flex-col h-full">
         
         {/* HEADER */}
         <div className="flex items-center justify-between mb-6">
           {!collapsed && (
-            <h2 className="text-lg font-semibold tracking-tight">Nodes</h2>
+            <h2 className="text-lg font-semibold tracking-tight">
+              Nodes
+            </h2>
           )}
 
           <button
@@ -66,44 +75,48 @@ export default function LeftSidebar({ mobileOpen, setMobileOpen }: LeftSidebarPr
         {/* NODE BUTTONS */}
         <div className="flex flex-col gap-2">
           
+          {/* TEXT */}
           <button
             draggable
             onDragStart={(e) => onDragStart(e, "textNode")}
             onClick={() => createNode("textNode")}
-            className={`${buttonBase} bg-gray-800 hover:bg-gray-700`}
+            className={buttonBase}
           >
-            <span>➕</span>
-            {!collapsed && <span>Text Node</span>}
+            <div className={`${iconStyle} bg-gray-400`} />
+            {!collapsed && <span className="text-gray-200">Text Node</span>}
           </button>
 
+          {/* LLM */}
           <button
             draggable
             onDragStart={(e) => onDragStart(e, "llmNode")}
             onClick={() => createNode("llmNode")}
-            className={`${buttonBase} bg-blue-600 hover:bg-blue-500`}
+            className={buttonBase}
           >
-            <span>🤖</span>
-            {!collapsed && <span>LLM Node</span>}
+            <div className={`${iconStyle} bg-blue-500`} />
+            {!collapsed && <span className="text-gray-200">LLM Node</span>}
           </button>
 
+          {/* IMAGE */}
           <button
             draggable
             onDragStart={(e) => onDragStart(e, "imageNode")}
             onClick={() => createNode("imageNode")}
-            className={`${buttonBase} bg-purple-600 hover:bg-purple-500`}
+            className={buttonBase}
           >
-            <span>🖼️</span>
-            {!collapsed && <span>Image Node</span>}
+            <div className={`${iconStyle} bg-purple-500`} />
+            {!collapsed && <span className="text-gray-200">Image Node</span>}
           </button>
 
+          {/* CROP */}
           <button
             draggable
             onDragStart={(e) => onDragStart(e, "cropNode")}
             onClick={() => createNode("cropNode")}
-            className={`${buttonBase} bg-green-600 hover:bg-green-500`}
+            className={buttonBase}
           >
-            <span>✂️</span>
-            {!collapsed && <span>Crop Node</span>}
+            <div className={`${iconStyle} bg-green-500`} />
+            {!collapsed && <span className="text-gray-200">Crop Node</span>}
           </button>
         </div>
 

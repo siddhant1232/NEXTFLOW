@@ -13,37 +13,36 @@ export default function LLMNode({
   };
 }) {
   return (
-    <div className="p-4 rounded-xl shadow-md w-64 border bg-yellow-50">
+    <div className="bg-[#1a1a1a] border border-gray-700 rounded-xl shadow-md w-60">
       
-      <Handle
-        type="target"
-        position={Position.Top}
-        style={{ background: "#555" }}
-      />
-
-      <p className="font-semibold mb-2 text-gray-700">LLM Node</p>
-      {data?.status === "running" && (
-        <p className="text-yellow-600">🟡 Running...</p>
-      )}
-
-      {data?.status === "success" && (
-        <p className="text-green-600">🟢 Success</p>
-      )}
-
-      {data?.status === "error" && (
-        <p className="text-red-600">🔴 Error</p>
-      )}
+      <Handle type="target" position={Position.Top} />
 
 
-      <div className="mt-2 text-sm text-gray-800 break-words">
-        {data?.output || "No output yet"}
+      <div className="px-3 py-2 border-b border-gray-700 flex items-center gap-2">
+        <div className="w-2 h-2 bg-blue-500 rounded-full" />
+        <p className="text-sm font-semibold text-gray-200">LLM</p>
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        style={{ background: "#555" }}
-      />
+
+      <div className="p-3 text-sm">
+        {data?.status === "running" && (
+          <p className="text-yellow-400">Running...</p>
+        )}
+
+        {data?.status === "success" && (
+          <p className="text-green-400">Success</p>
+        )}
+
+        {data?.status === "error" && (
+          <p className="text-red-400">Error</p>
+        )}
+
+        <div className="mt-2 text-gray-400 break-words">
+          {data?.output || "No output"}
+        </div>
+      </div>
+
+      <Handle type="source" position={Position.Bottom} />
     </div>
   );
 }

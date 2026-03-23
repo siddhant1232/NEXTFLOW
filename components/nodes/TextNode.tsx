@@ -3,27 +3,39 @@
 import { Handle, Position } from "reactflow";
 import { useWorkflowStore } from "@/store/useWorkflowStore";
 
-export default function TextNode({ id, data }: { id: string, data: { text: string } }) {
+export default function TextNode({
+  id,
+  data,
+}: {
+  id: string;
+  data: { text: string };
+}) {
   const updateNodeData = useWorkflowStore(
     (state) => state.updateNodeData
   );
 
   return (
-    <div className="p-3 rounded-xl shadow-md w-60 border border-gray-300 bg-white">
+    <div className="bg-[#1a1a1a] border border-gray-700 rounded-xl shadow-md w-60">
       
       <Handle type="target" position={Position.Top} />
 
-      <p className="font-semibold text-sm mb-2 text-gray-700">Text Node</p>
 
-      <textarea
-        className="border w-full p-2 text-xs text-gray-700"
-        value={data.text || ""}
-        onChange={(e) =>
-          updateNodeData(id, { text: e.target.value })
-        }
-        placeholder="Enter text..."
-      />
+      <div className="px-3 py-2 border-b border-gray-700 flex items-center gap-2">
+        <div className="w-2 h-2 bg-gray-400 rounded-full" />
+        <p className="text-sm font-semibold text-gray-200">Text</p>
+      </div>
 
+
+      <div className="p-3">
+        <textarea
+          className="w-full bg-[#0f0f0f] border border-gray-600 rounded p-2 text-sm text-gray-200 outline-none resize-none"
+          value={data.text || ""}
+          onChange={(e) =>
+            updateNodeData(id, { text: e.target.value })
+          }
+          placeholder="Enter text..."
+        />
+      </div>
 
       <Handle type="source" position={Position.Bottom} />
     </div>
