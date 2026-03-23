@@ -4,6 +4,12 @@ type Run = {
   id: string;
   timestamp: string;
   status: "success" | "error";
+  nodes: {
+    id: string;
+    type: string;
+    status: string;
+    output?: string;
+  }[];
 };
 
 

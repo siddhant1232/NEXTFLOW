@@ -31,8 +31,6 @@ export default function WorkflowCanvas() {
   const [isRunning, setIsRunning] = useState(false);
   const addRun = useWorkflowStore((state) => state.addRun);
 
-  // ---------------- React Flow Handlers ----------------
-
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     useWorkflowStore.setState((state) => ({
       nodes: applyNodeChanges(changes, state.nodes),
@@ -54,8 +52,6 @@ export default function WorkflowCanvas() {
     }));
   }, []);
 
-  // ---------------- Data Flow ----------------
-
   const getInputData = (nodeId: string) => {
     const { nodes, edges } = useWorkflowStore.getState();
 
@@ -70,8 +66,6 @@ export default function WorkflowCanvas() {
       return sourceNode?.data;
     });
   };
-
-  // ---------------- Execution Levels ----------------
 
   const getExecutionLevels = () => {
     const inDegree: Record<string, number> = {};
@@ -110,8 +104,6 @@ export default function WorkflowCanvas() {
     return levels;
   };
 
-  // ---------------- Cycle Detection ----------------
-
   const hasCycle = () => {
     const inDegree: Record<string, number> = {};
     const adj: Record<string, string[]> = {};
@@ -147,8 +139,6 @@ export default function WorkflowCanvas() {
     return count !== nodes.length;
   };
 
-  // ---------------- Run Workflow ----------------
-
   const runWorkflow = async () => {
     if (hasCycle()) {
       alert("Cycle detected! Workflow must be a DAG.");
@@ -158,7 +148,6 @@ export default function WorkflowCanvas() {
     const levels = getExecutionLevels();
 
     for (const level of levels) {
-      // 👇 delay for better UX
       await new Promise((res) => setTimeout(res, 700));
 
       for (const nodeId of level) {
@@ -252,21 +241,26 @@ export default function WorkflowCanvas() {
             ),
           }));
         }
+        const { nodes: finalNodes } = useWorkflowStore.getState();
+
         addRun({
           id: Date.now().toString(),
           timestamp: new Date().toLocaleTimeString(),
           status: "success",
+          nodes: finalNodes.map((n) => ({
+            id: n.id,
+            type: n.type!,
+            status: n.data?.status || "unknown",
+            output: n.data?.output,
+          })),
         });
       }
     }
   };
 
-  // ---------------- UI ----------------
-
   return (
     <div className="h-screen w-full relative">
       
-      {/* Run Button */}
       <button
         disabled={isRunning}
         className={`absolute top-4 left-72 z-10 px-3 py-1 rounded ${
@@ -281,7 +275,6 @@ export default function WorkflowCanvas() {
         {isRunning ? "Running..." : "Run"}
       </button>
 
-      {/* Canvas */}
       <ReactFlow
         nodes={nodes}
         edges={edges}
