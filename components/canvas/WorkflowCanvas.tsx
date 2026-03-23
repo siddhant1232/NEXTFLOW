@@ -17,6 +17,7 @@ import TextNode from "@/components/nodes/TextNode";
 import LLMNode from "@/components/nodes/LLMNode";
 import ImageNode from "@/components/nodes/ImageNode";
 import CropNode from "@/components/nodes/CropNode";
+import { MiniMap } from "reactflow";
 
 const nodeTypes = {
   textNode: TextNode,
@@ -343,6 +344,24 @@ export default function WorkflowCanvas() {
       >
         <Background />
         <Controls />
+        <MiniMap
+          position="bottom-right"
+          className="!bg-[#111] !border border-gray-700 rounded-md"
+          nodeColor={(node) => {
+            switch (node.type) {
+              case "textNode":
+                return "#9ca3af";
+              case "llmNode":
+                return "#3b82f6";
+              case "imageNode":
+                return "#a855f7";
+              case "cropNode":
+                return "#22c55e";
+              default:
+                return "#555";
+            }
+          }}
+        />
       </ReactFlow>
     </div>
   );
