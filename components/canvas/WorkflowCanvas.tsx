@@ -19,6 +19,7 @@ import ImageNode from "@/components/nodes/ImageNode";
 import CropNode from "@/components/nodes/CropNode";
 import { MiniMap } from "reactflow";
 
+
 const nodeTypes = {
   textNode: TextNode,
   llmNode: LLMNode,
@@ -313,19 +314,60 @@ export default function WorkflowCanvas() {
   return (
     <div className="h-screen w-full relative">
 
-      <button
-        disabled={isRunning}
-        className={`absolute top-4 left-72 z-10 px-3 py-1 rounded ${
-          isRunning ? "bg-gray-500" : "bg-green-600"
-        } text-white`}
-        onClick={async () => {
-          setIsRunning(true);
-          await runWorkflow();
-          setIsRunning(false);
-        }}
-      >
-        {isRunning ? "Running..." : "Run"}
-      </button>
+    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+  
+        {/* RUN */}
+        <button
+          disabled={isRunning}
+          className={`px-4 py-2 rounded-lg ${
+            isRunning ? "bg-gray-500" : "bg-green-600 hover:bg-green-500"
+          } text-white`}
+          onClick={async () => {
+            setIsRunning(true);
+            await runWorkflow();
+            setIsRunning(false);
+          }}
+        >
+          {isRunning ? "Running..." : "Run"}
+        </button>
+
+        {/* SAVE */}
+        <button
+          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white"
+          onClick={async () => {
+            const { nodes, edges } = useWorkflowStore.getState();
+
+            await fetch("/api/workflows/save", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ nodes, edges }),
+            });
+
+            alert("Saved!");
+          }}
+        >
+          Save
+        </button>
+
+        {/* LOAD */}
+        <button
+          className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white"
+          onClick={async () => {
+            const res = await fetch("/api/workflows/load");
+            const data = await res.json();
+
+            useWorkflowStore.setState({
+              nodes: data.nodes || [],
+              edges: data.edges || [],
+            });
+          }}
+        >
+          Load
+        </button>
+
+      </div>
 
 
       <ReactFlow
