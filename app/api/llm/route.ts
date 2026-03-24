@@ -3,11 +3,12 @@ import type { llmTask } from "@/trigger/llm"; // Optional: For type safety
 
 export async function POST(req: Request) {
   try {
-    const { prompt } = await req.json();
+    const { prompt, imageUrl } = await req.json();
 
     // Trigger the task
     const handle = await tasks.trigger<typeof llmTask>("llm-task", {
       prompt,
+      imageUrl,
     });
 
     // Wait for it to complete using runs.poll

@@ -44,6 +44,10 @@ export default function ImageNode({
       const data = await res.json();
       
 
+      if (data.error) {
+        throw new Error(`Transloadit API Error: ${data.message || data.error}`);
+      }
+
       if (data.uploads && data.uploads.length > 0) {
         updateNodeData(id, { image: data.uploads[0].ssl_url, isUploading: false });
       } else {

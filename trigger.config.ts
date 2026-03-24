@@ -1,9 +1,13 @@
 import { defineConfig } from "@trigger.dev/sdk/v3";
+import { aptGet } from "@trigger.dev/build/extensions/core";
 
 export default defineConfig({
   project: "proj_cmsdficesmgubnebeprd",
   runtime: "node",
   logLevel: "log",
+  build: {
+    extensions: [aptGet({ packages: ["ffmpeg"] })],
+  },
   // The max compute seconds a task is allowed to run. If the task run exceeds this duration, it will be stopped.
   // You can override this on an individual task.
   // See https://trigger.dev/docs/runs/max-duration

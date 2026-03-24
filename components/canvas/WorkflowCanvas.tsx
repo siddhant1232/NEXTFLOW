@@ -303,6 +303,7 @@ export default function WorkflowCanvas() {
               .filter(Boolean);
 
             const combinedText = textInputs.join(" ");
+            const imageInput = inputs.find((inp) => inp?.image);
 
             let output = "";
 
@@ -312,7 +313,10 @@ export default function WorkflowCanvas() {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ prompt: combinedText }),
+                body: JSON.stringify({ 
+                  prompt: combinedText,
+                  imageUrl: imageInput?.image 
+                }),
               });
 
               const data = await res.json();

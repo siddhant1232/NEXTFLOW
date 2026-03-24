@@ -16,15 +16,20 @@ export async function GET() {
   
   const params = JSON.stringify({
     auth: { key: authKey, expires },
-    template_id: "", 
-    steps: {}, 
+    steps: {
+      ":original": {
+        robot: "/upload/handle",
+      },
+    },
   });
 
 
-  const signature = crypto
+  const hexDigest = crypto
     .createHmac("sha384", authSecret)
     .update(Buffer.from(params, "utf-8"))
     .digest("hex");
+
+  const signature = `sha384:${hexDigest}`;
 
   return Response.json({ params, signature });
 }
