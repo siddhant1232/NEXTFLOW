@@ -18,9 +18,12 @@ export default function ImageNode({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
-
-    updateNodeData(id, { image: url });
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      updateNodeData(id, { image: base64 });
+    };
+    reader.readAsDataURL(file);
   };
 
   return (

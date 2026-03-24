@@ -261,8 +261,24 @@ export default function WorkflowCanvas() {
 
           if (node.type === "cropNode") {
             const imageInput = inputs.find((inp) => inp?.image);
+            let resultImage = imageInput?.image;
 
-            await new Promise((res) => setTimeout(res, 400));
+            if (resultImage) {
+              try {
+                const res = await fetch("/api/crop", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ imageBase64: resultImage }),
+                });
+
+                const data = await res.json();
+                if (data.image) {
+                  resultImage = data.image;
+                }
+              } catch (e) {
+                console.error("Crop trigger failed:", e);
+              }
+            }
 
             useWorkflowStore.setState((state) => ({
               nodes: state.nodes.map((n) =>
@@ -271,7 +287,7 @@ export default function WorkflowCanvas() {
                       ...n,
                       data: {
                         ...n.data,
-                        image: imageInput?.image,
+                        image: resultImage,
                         status: "success",
                       },
                     }
