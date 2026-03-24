@@ -14,16 +14,46 @@ export default function ImageNode({
     (state) => state.updateNodeData
   );
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string;
-      updateNodeData(id, { image: base64 });
-    };
-    reader.readAsDataURL(file);
+
+    updateNodeData(id, { image: "", isUploading: true });
+
+    try {
+      const authRes = await fetch("/api/upload");
+      
+      if (!authRes.ok) {
+        throw new Error("Ensure TRANSLOADIT_AUTH_KEY and TRANSLOADIT_AUTH_SECRET are in .env.local!");
+      }
+
+      const { params, signature } = await authRes.json();
+
+      const formData = new FormData();
+      formData.append("params", params);
+      formData.append("signature", signature);
+      formData.append("file", file);
+
+
+      const res = await fetch("https://api2.transloadit.com/assemblies", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      
+
+      if (data.uploads && data.uploads.length > 0) {
+        updateNodeData(id, { image: data.uploads[0].ssl_url, isUploading: false });
+      } else {
+        throw new Error("Transloadit returned zero uploads array");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(String(err));
+      updateNodeData(id, { isUploading: false, image: "" });
+    }
   };
 
   return (
