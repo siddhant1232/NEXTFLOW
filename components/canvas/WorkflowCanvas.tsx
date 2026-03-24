@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -34,8 +34,53 @@ export default function WorkflowCanvas() {
   const addRun = useWorkflowStore((state) => state.addRun);
 
   const [isRunning, setIsRunning] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const { project } = useReactFlow(); 
+
+  // Auto-Load on mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch("/api/workflows/load");
+        const data = await res.json();
+        
+        if (data && (data.nodes || data.edges)) {
+          useWorkflowStore.setState({
+            nodes: data.nodes || [],
+            edges: data.edges || [],
+          });
+        }
+      } catch (e) {
+        console.error("Failed to auto-load workflow", e);
+      } finally {
+        setIsInitialized(true);
+      }
+    }
+    loadData();
+  }, []);
+
+  // Auto-Save on change (debounced to avoid spamming the API)
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        await fetch("/api/workflows/save", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nodes, edges }),
+        });
+        console.log("Auto-saved successfully!");
+      } catch (e) {
+        console.error("Failed to auto-save workflow", e);
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [nodes, edges, isInitialized]);
 
 
 
@@ -246,7 +291,7 @@ export default function WorkflowCanvas() {
             let output = "";
 
             try {
-              const res = await fetch("/api/gemini", {
+              const res = await fetch("/api/llm", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -331,41 +376,7 @@ export default function WorkflowCanvas() {
           {isRunning ? "Running..." : "Run"}
         </button>
 
-        {/* SAVE */}
-        <button
-          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white"
-          onClick={async () => {
-            const { nodes, edges } = useWorkflowStore.getState();
 
-            await fetch("/api/workflows/save", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ nodes, edges }),
-            });
-
-            alert("Saved!");
-          }}
-        >
-          Save
-        </button>
-
-        {/* LOAD */}
-        <button
-          className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white"
-          onClick={async () => {
-            const res = await fetch("/api/workflows/load");
-            const data = await res.json();
-
-            useWorkflowStore.setState({
-              nodes: data.nodes || [],
-              edges: data.edges || [],
-            });
-          }}
-        >
-          Load
-        </button>
 
       </div>
 
